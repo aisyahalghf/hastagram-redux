@@ -22,13 +22,16 @@ import { toast, Toaster } from "react-hot-toast";
 import { Icon } from "@iconify/react";
 import CardEditCaption from "../Component /CardEditCaption";
 import CardComment from "../Component /CardComment";
+import { userAlbum } from "../redux/action/userContent";
+import { useDispatch } from "react-redux";
 
-const UsersProfileDetail = ({ getAlbum }) => {
+const UsersProfileDetail = () => {
   const { id } = useParams();
   let [data, setData] = useState({});
   let navigate = useNavigate();
   let [comment, setComment] = useState([]);
   let userComment = useRef();
+  let dispatch = useDispatch();
 
   const singleContent = async () => {
     try {
@@ -76,7 +79,7 @@ const UsersProfileDetail = ({ getAlbum }) => {
         `http://localhost:4000/content/remove-content/${id}`
       );
       toast(data.data.message);
-      getAlbum();
+      dispatch(userAlbum());
       navigate("/profile");
     } catch (error) {
       console.log(error.response.data.message);

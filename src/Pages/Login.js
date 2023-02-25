@@ -1,11 +1,41 @@
 import { Button, Input, InputGroup, InputRightElement } from "@chakra-ui/react";
 import { Icon } from "@iconify/react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { loginUser } from "../redux/action/user";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
-const Login = ({ handleLogin }) => {
+const Login = () => {
+  let navigate = useNavigate();
   let usernameOrEmail = useRef();
   let password = useRef();
+  const dispatch = useDispatch();
+  let user = useSelector((state) => state.auth);
+
+  console.log(user);
+
+  const handleLogin = () => {
+    let inputUsernameOrEmail = usernameOrEmail.current.value;
+    let inputPassword = password.current.value;
+    dispatch(
+      loginUser({
+        usernameOrEmail: inputUsernameOrEmail,
+        password: inputPassword,
+      })
+    );
+    if (user.errorMessage) {
+      toast(user.errorMessage);
+    }
+  };
+
+  useEffect(() => {
+    if (user.user.token) {
+      localStorage.setItem("my_Token", user.user.token);
+      navigate("/");
+    }
+  }, [user]);
 
   const handleVisible = () => {
     let x = document.getElementById("myInput");
@@ -59,12 +89,7 @@ const Login = ({ handleLogin }) => {
               </Button>
             </Link>
             <Button
-              onClick={() =>
-                handleLogin({
-                  usernameOrEmail: usernameOrEmail.current.value,
-                  password: password.current.value,
-                })
-              }
+              onClick={handleLogin}
               className="pl-2 pr-2 p-1 mt-2 border border-slate-500 rounded-xl m-0-auto"
             >
               Signin

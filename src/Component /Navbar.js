@@ -6,15 +6,18 @@ import { toast, Toaster } from "react-hot-toast";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-const Navbar = ({ data, keepLogin }) => {
+const Navbar = () => {
   let [loading, setLoading] = useState(false);
   let navigate = useNavigate();
+  let user = useSelector((state) => state.auth);
 
   const handleVerified = async () => {
     try {
       setLoading(true);
       let storage = localStorage.my_Token;
+      console.log(storage);
       let data = await axios.get(
         `http://localhost:4000/users/resend-verified`,
         {
@@ -24,10 +27,10 @@ const Navbar = ({ data, keepLogin }) => {
         }
       );
       toast(data.data.message);
-      setLoading(true);
+      setLoading(false);
     } catch (error) {
       setLoading(false);
-      console.log(data);
+      console.log(error);
     }
   };
 
@@ -37,12 +40,14 @@ const Navbar = ({ data, keepLogin }) => {
     window.location.reload();
   };
 
-  let photoProfile = `http://localhost:4000${data?.profile_picture?.slice(6)}`;
+  let photoProfile = `http://localhost:4000${user?.user?.profile_picture?.slice(
+    6
+  )}`;
 
   return (
     <nav className=" shadow shadow-slate-200 sticky top-0 z-10 bg-white ">
       <div className="container mx-auto flex flex-row justify-center gap-32 items-center">
-        {data.username ? (
+        {user?.user?.username ? (
           <Link to="/">
             <div className=" font-mono font-semibold text-2xl ">Hashtagram</div>
           </Link>
@@ -56,12 +61,12 @@ const Navbar = ({ data, keepLogin }) => {
 
         <div className=" w-[50%] h-fit"></div>
         <div>
-          {data.username ? (
+          {user?.user?.username ? (
             <div className="flex flex-row gap-3 pt-5 w-[350px] items-center mb-3 ">
-              {data.profile_picture ? (
+              {user.user.profile_picture ? (
                 <img
                   src={photoProfile}
-                  alt="photo"
+                  alt=""
                   width="40px"
                   className=" rounded-[18px] h-[38px] "
                   onClick={handleLogout}
@@ -71,12 +76,12 @@ const Navbar = ({ data, keepLogin }) => {
               )}
 
               <div className=" flex flex-col items-start">
-                <div className="font-bold">{data.username}</div>
-                {data.bio ? (
+                <div className="font-bold">{user.user.username}</div>
+                {user.user.bio ? (
                   <div className=" text-xs font-semibold text-slate-400 ">
-                    {data.fullname}
+                    {user.user.fullname}
                   </div>
-                ) : data.status === "unverified" ? (
+                ) : user.user.status === "unverified" ? (
                   <Button
                     colorScheme="red"
                     fontSize="12px"
@@ -92,7 +97,7 @@ const Navbar = ({ data, keepLogin }) => {
                     fontSize="12px"
                     h="fit-content"
                     p="5px"
-                    keepLogin={keepLogin}
+                    // keepLogin={keepLogin}
                   />
                 )}
               </div>

@@ -34,7 +34,7 @@ const CreateProfile = () => {
     }
   };
 
-  const handleSave = async ({ keepLogin }) => {
+  const handleSave = async () => {
     try {
       let inputFullname = fullname.current.value;
       let inputBio = bio.current.value;

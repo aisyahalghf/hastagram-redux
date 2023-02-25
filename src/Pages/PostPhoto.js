@@ -17,7 +17,7 @@ import { useDisclosure } from "@chakra-ui/react";
 import axios from "axios";
 import { toast, Toaster } from "react-hot-toast";
 
-const PostPhoto = ({ getAllContent }) => {
+const PostPhoto = ({ showAll }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const images = useRef();
   const caption = useRef();
@@ -53,7 +53,7 @@ const PostPhoto = ({ getAllContent }) => {
         );
         console.log(getData);
         toast(getData.data.message);
-        getAllContent();
+        showAll();
         onClose();
         window.location.reload();
       }

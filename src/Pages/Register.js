@@ -1,21 +1,24 @@
 import { Button, Input, InputGroup, InputRightElement } from "@chakra-ui/react";
 import { toast, Toaster } from "react-hot-toast";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Icon } from "@iconify/react";
 import { Link } from "react-router-dom";
-
-import axios from "axios";
+import { registerUser } from "../redux/action/user";
+import { useDispatch, useSelector } from "react-redux";
 
 const Register = () => {
-  let [message, setMessage] = useState("");
   let [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  let user = useSelector((state) => state.auth);
+
+  // console.log(user);
 
   let username = useRef();
   let email = useRef();
   let password = useRef();
   let repeatPassword = useRef();
 
-  const handleRegister = async () => {
+  const handleRegister = () => {
     try {
       setLoading(true);
       let inputusername = username.current.value;
@@ -23,33 +26,34 @@ const Register = () => {
       let inputPassword = password.current.value;
       let inputRepeatPassword = repeatPassword.current.value;
 
-      // validate
+      dispatch(
+        registerUser({
+          username: inputusername,
+          email: inputEmail,
+          password: inputPassword,
+          repeatPassword: inputRepeatPassword,
+        })
+      );
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
+  };
 
-      if (inputPassword !== inputRepeatPassword)
-        throw {
-          response: {
-            data: { message: "password and repeat password not match" },
-          },
-        };
-
-      let createUser = await axios.post(`http://localhost:4000/users/sign-up`, {
-        username: inputusername,
-        email: inputEmail,
-        password: inputPassword,
-      });
-
-      toast(createUser.data.message);
+  useEffect(() => {
+    setLoading(true);
+    if (user.user.message) {
+      setLoading(true);
+      toast(user.user.message);
       username.current.value = "";
       email.current.value = "";
       password.current.value = "";
       repeatPassword.current.value = "";
-      setMessage("");
       setLoading(false);
-    } catch (error) {
+    } else {
       setLoading(false);
-      setMessage(error.response.data.message);
     }
-  };
+  });
 
   const handleVisible = () => {
     let x = document.getElementById("myInput");
@@ -127,7 +131,6 @@ const Register = () => {
               </InputRightElement>
             </InputGroup>
 
-            <div className=" text-red-700 text-xs italic m-5 ">{message}</div>
             {loading === true ? null : (
               <div className=" flex flex-row justify-center gap-5">
                 <Link to="/login">
